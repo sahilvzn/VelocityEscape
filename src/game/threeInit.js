@@ -1,10 +1,23 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 export function createRendererAndScene(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  // Set initial canvas size to match viewport
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const renderer = new THREE.WebGLRenderer({ 
+    canvas, 
+    antialias: true, 
+    alpha: false,
+    powerPreference: 'high-performance'
+  });
+  
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0e14);
 
