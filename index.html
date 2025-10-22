@@ -1,3 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escape Road - Endless Police Chase</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Game Canvas -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="screen">
+        <div class="menu-content">
+            <h1>ESCAPE ROAD</h1>
+            <p class="tagline">Outrun the Police. Collect Money. Survive.</p>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" id="startGameBtn">START GAME</button>
+                <button class="btn btn-secondary" id="garageBtn">GARAGE</button>
+                <button class="btn btn-secondary" id="howToPlayBtn">HOW TO PLAY</button>
+            </div>
+            <div class="stats-display">
+                <div class="stat-item">
+                    <span class="stat-label">💰 Total Money:</span>
+                    <span class="stat-value" id="totalMoney">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">🏆 Best Distance:</span>
+                    <span class="stat-value" id="bestDistance">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Play Screen -->
+    <div id="howToPlayScreen" class="screen hidden">
+        <div class="menu-content">
+            <h2>HOW TO PLAY</h2>
+            <div class="instructions">
+                <div class="instruction-item">
+                    <h3>🎮 CONTROLS</h3>
+                    <p><strong>W / ↑</strong> - Accelerate</p>
+                    <p><strong>S / ↓</strong> - Brake / Reverse</p>
+                    <p><strong>A / ←</strong> - Turn Left</p>
+                    <p><strong>D / →</strong> - Turn Right</p>
+                    <p><strong>SPACE</strong> - Handbrake / Drift</p>
+                </div>
+                <div class="instruction-item">
+                    <h3>🎯 OBJECTIVE</h3>
+                    <p>Escape from the police for as long as possible!</p>
+                    <p>Collect 💰 money to unlock new vehicles in the garage.</p>
+                    <p>Avoid obstacles and don't let the police catch you!</p>
+                </div>
+                <div class="instruction-item">
+                    <h3>⚠️ WARNING</h3>
+                    <p>The longer you survive, the more police will chase you.</p>
+                    <p>Crashing into obstacles or police will end your run!</p>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="backToMenuBtn">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Garage/Shop Screen -->
+    <div id="garageScreen" class="screen hidden">
+        <div class="menu-content">
+            <h2>GARAGE</h2>
+            <div class="money-display">
+                <span>💰 Available Money: <strong id="garageMoney">0</strong></span>
+            </div>
+            <div id="vehicleList" class="vehicle-list">
+                <!-- Vehicles will be populated by JavaScript -->
+            </div>
+            <button class="btn btn-primary" id="backToMenuFromGarageBtn">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Game HUD (visible during gameplay) -->
+    <div id="gameHUD" class="hud hidden">
+        <div class="hud-top">
+            <div class="hud-item">
+                <span class="hud-label">Distance:</span>
+                <span class="hud-value" id="distanceValue">0 m</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Time:</span>
+                <span class="hud-value" id="timeValue">0:00</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Money:</span>
+                <span class="hud-value" id="moneyValue">💰 0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Speed:</span>
+                <span class="hud-value" id="speedValue">0 km/h</span>
+            </div>
+        </div>
+        <div class="hud-bottom">
+            <div class="police-alert" id="policeAlert">
+                🚨 POLICE NEARBY 🚨
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div id="mobileControls" class="mobile-controls hidden">
+        <div class="control-group control-left">
+            <button class="control-btn" id="leftBtn">←</button>
+            <button class="control-btn" id="rightBtn">→</button>
+        </div>
+        <div class="control-group control-right">
+            <button class="control-btn" id="accelerateBtn">↑</button>
+            <button class="control-btn" id="brakeBtn">↓</button>
+        </div>
+        <button class="control-btn control-drift" id="driftBtn">DRIFT</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="screen hidden">
+        <div class="menu-content">
+            <h2 class="game-over-title">BUSTED!</h2>
+            <div class="game-over-stats">
+                <div class="stat-item">
+                    <span class="stat-label">📏 Distance Traveled:</span>
+                    <span class="stat-value" id="finalDistance">0 m</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">⏱️ Time Survived:</span>
+                    <span class="stat-value" id="finalTime">0:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">💰 Money Collected:</span>
+                    <span class="stat-value" id="finalMoney">0</span>
+                </div>
+                <div class="stat-item highlight">
+                    <span class="stat-label">💵 Total Money:</span>
+                    <span class="stat-value" id="finalTotalMoney">0</span>
+                </div>
+            </div>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" id="playAgainBtn">PLAY AGAIN</button>
+                <button class="btn btn-secondary" id="toGarageBtn">GO TO GARAGE</button>
+                <button class="btn btn-secondary" id="toMenuBtn">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="screen">
+        <div class="loading-content">
+            <h2>LOADING...</h2>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Game Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/vehicle.js"></script>
+    <script src="js/police.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/game.js"></script>
 <!doctype html>
 <html lang="en">
 <head>
