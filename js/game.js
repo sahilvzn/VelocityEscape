@@ -115,8 +115,11 @@
   // THREE setup
   const canvas = document.getElementById('game');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  // Initial sizing to viewport
+  const initDpr = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(initDpr);
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
+  if (canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   renderer.shadowMap.enabled = true;
 
   const scene = new THREE.Scene();
@@ -466,11 +469,46 @@
   // Resize
   function onResize(){
     const w = window.innerWidth, h = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
+    if (canvas) { canvas.width = w; canvas.height = h; }
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
   }
-  window.addEventListener('resize', onResize);
+  // Lightweight overlay during resize
+  let __resizeHideTimer = null;
+  function ensureResizeNotice(){
+    let el = document.getElementById('resizeNotice');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'resizeNotice';
+      el.textContent = 'Resizing…';
+      // Inline fallback styles in case CSS not present
+      el.style.position = 'fixed';
+      el.style.left = '50%';
+      el.style.top = '50%';
+      el.style.transform = 'translate(-50%, -50%)';
+      el.style.background = 'rgba(0,0,0,0.6)';
+      el.style.color = '#e6edf3';
+      el.style.padding = '8px 12px';
+      el.style.border = '1px solid #263147';
+      el.style.borderRadius = '8px';
+      el.style.fontSize = '14px';
+      el.style.zIndex = '9999';
+      el.style.display = 'none';
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function handleResize(){
+    const el = ensureResizeNotice();
+    el.style.display = 'block';
+    onResize();
+    if (__resizeHideTimer) clearTimeout(__resizeHideTimer);
+    __resizeHideTimer = setTimeout(() => { el.style.display = 'none'; }, 250);
+  }
+  window.addEventListener('resize', handleResize);
 
   // Main loop
   let last = performance.now() / 1000;
@@ -575,15 +613,26 @@ class Game {
             canvas: this.canvas,
             antialias: true 
         });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        // Initial full-viewport sizing
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.renderer.setPixelRatio(dpr);
+        this.renderer.setSize(window.innerWidth, window.innerHeight, false);
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         
         // Handle window resize
         window.addEventListener('resize', () => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const dprNow = Math.min(window.devicePixelRatio || 1, 2);
+            this.renderer.setPixelRatio(dprNow);
+            this.renderer.setSize(w, h, false);
+            this.canvas.width = w;
+            this.canvas.height = h;
+            this.camera.aspect = w / h;
             this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
     }
 

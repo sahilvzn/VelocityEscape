@@ -43,10 +43,16 @@ class UIManager {
         // Setup event listeners
         this.setupEventListeners();
         
-        // Show mobile controls on mobile devices
-        if (isMobile()) {
+        // Show mobile controls only on smaller screens or mobile
+        const smallScreen = () => (isMobile() || window.innerWidth <= 820);
+        if (smallScreen()) {
             this.showMobileControls();
+        } else {
+            this.hideMobileControls();
         }
+        window.addEventListener('resize', () => {
+            if (smallScreen()) this.showMobileControls(); else this.hideMobileControls();
+        });
     }
 
     setupEventListeners() {
