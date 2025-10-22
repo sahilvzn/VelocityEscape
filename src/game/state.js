@@ -30,7 +30,11 @@ export class Game {
     this.scene = scene;
     this.camera = createCamera();
 
-    window.addEventListener('resize', () => this._onResize());
+    const resizeWithOverlay = () => {
+      // Optional: show a brief resize overlay (non-blocking)
+      this._onResize();
+    };
+    window.addEventListener('resize', resizeWithOverlay);
     this._onResize();
 
     await this.assets.loadPlaceholders();
@@ -111,6 +115,13 @@ export class Game {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = window.innerWidth;
     const h = window.innerHeight;
+    // Ensure canvas element matches CSS size
+    if (this.canvas) {
+      this.canvas.width = Math.floor(w * dpr);
+      this.canvas.height = Math.floor(h * dpr);
+      this.canvas.style.width = w + 'px';
+      this.canvas.style.height = h + 'px';
+    }
     this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(w, h, false);
     if (this.camera.isPerspectiveCamera) {
