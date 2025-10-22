@@ -128,5 +128,14 @@ export function setupUI() {
     api.showGarage();
   });
 
+  // Mobile: show touch controls if small screen or touch support
+  const updateTouchVisibility = () => {
+    const shouldShow = ('ontouchstart' in window) || window.innerWidth < 720;
+    if (shouldShow) touch.root.classList.remove('hidden');
+    else touch.root.classList.add('hidden');
+  };
+  updateTouchVisibility();
+  window.addEventListener('resize', updateTouchVisibility);
+
   return api;
 }

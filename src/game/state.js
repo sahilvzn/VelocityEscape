@@ -30,6 +30,12 @@ export class Game {
     this.scene = scene;
     this.camera = createCamera();
 
+    const resizeWithOverlay = () => {
+      // Optional: show a brief resize overlay (non-blocking)
+      this._onResize();
+    };
+    window.addEventListener('resize', resizeWithOverlay);
+    this._onResize();
     // Resize overlay element
     this.resizeOverlay = document.getElementById('resize-overlay');
     this.resizeTimeout = null;
@@ -133,6 +139,13 @@ export class Game {
     // Get actual viewport dimensions
     const w = window.innerWidth;
     const h = window.innerHeight;
+    // Ensure canvas element matches CSS size
+    if (this.canvas) {
+      this.canvas.width = Math.floor(w * dpr);
+      this.canvas.height = Math.floor(h * dpr);
+      this.canvas.style.width = w + 'px';
+      this.canvas.style.height = h + 'px';
+    }
     
     // Set canvas size to match viewport
     this.canvas.width = w;
