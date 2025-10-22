@@ -30,8 +30,19 @@ export class Game {
     this.scene = scene;
     this.camera = createCamera();
 
-    window.addEventListener('resize', () => this._onResize());
-    this._onResize();
+    // Resize overlay element
+    this.resizeOverlay = document.getElementById('resize-overlay');
+    this.resizeTimeout = null;
+
+    // Handle window resize and orientation change
+    const resizeHandler = () => this._onResize();
+    window.addEventListener('resize', resizeHandler);
+    window.addEventListener('orientationchange', () => {
+      // Delay to allow the viewport to settle
+      setTimeout(resizeHandler, 100);
+    });
+    
+    this._onResize(); // Initial size
 
     await this.assets.loadPlaceholders();
     await this.audio.init();
@@ -108,17 +119,47 @@ export class Game {
 
   _onResize() {
     if (!this.renderer || !this.camera) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    
+    // Show resize overlay during adjustment
+    if (this.resizeOverlay && this.activeScene) {
+      this.resizeOverlay.classList.remove('hidden');
+    }
+    
+    // Clear existing timeout
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    
+    // Get actual viewport dimensions
     const w = window.innerWidth;
     const h = window.innerHeight;
+    
+    // Set canvas size to match viewport
+    this.canvas.width = w;
+    this.canvas.height = h;
+    
+    // Update renderer with device pixel ratio for crisp rendering
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(w, h, false);
+    
+    // Update camera aspect ratio and projection
     if (this.camera.isPerspectiveCamera) {
       this.camera.aspect = w / h;
       this.camera.updateProjectionMatrix();
-    } else if (this.camera.isOrthographicCamera) {
-      // no-op here
     }
+    
+    // Notify active scene of resize if needed
+    if (this.activeScene && this.activeScene.onResize) {
+      this.activeScene.onResize(w, h);
+    }
+    
+    // Hide resize overlay after a short delay
+    this.resizeTimeout = setTimeout(() => {
+      if (this.resizeOverlay) {
+        this.resizeOverlay.classList.add('hidden');
+      }
+    }, 300);
   }
 
   _tick() {
