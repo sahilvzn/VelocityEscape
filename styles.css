@@ -1,0 +1,592 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Game Container */
+#gameContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #000;
+}
+
+/* Screen Layouts */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+    transition: opacity 0.3s ease;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu-content {
+    text-align: center;
+    padding: 20px;
+    max-width: 800px;
+    width: 90%;
+}
+
+/* Typography */
+h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #ff4757;
+    text-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+h2 {
+    font-size: 2.5rem;
+    color: #ffa502;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(255, 165, 2, 0.5);
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #ffa502;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    color: #dfe6e9;
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 71, 87, 0.6);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #2f3542 0%, #57606f 100%);
+    color: white;
+    box-shadow: 0 5px 15px rgba(47, 53, 66, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(47, 53, 66, 0.6);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.menu-buttons {
+    margin: 30px 0;
+}
+
+/* Stats Display */
+.stats-display {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #b2bec3;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffa502;
+}
+
+/* Instructions */
+.instructions {
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.instruction-item {
+    margin-bottom: 20px;
+}
+
+.instruction-item p {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #dfe6e9;
+}
+
+.instruction-item strong {
+    color: #ffa502;
+}
+
+/* Game HUD */
+.hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.hud.hidden {
+    display: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hud-label {
+    font-size: 0.9rem;
+    color: #b2bec3;
+    margin-bottom: 5px;
+}
+
+.hud-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffa502;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.hud-bottom {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.police-alert {
+    background: rgba(255, 71, 87, 0.9);
+    padding: 10px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    animation: pulse 1s infinite;
+    display: none;
+}
+
+.police-alert.active {
+    display: block;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Mobile Controls */
+.mobile-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    z-index: 60;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.mobile-controls.hidden {
+    display: none;
+}
+
+.control-group {
+    display: flex;
+    gap: 10px;
+    pointer-events: all;
+}
+
+.control-left {
+    flex-direction: row;
+}
+
+.control-right {
+    flex-direction: column;
+}
+
+.control-btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+}
+
+.control-btn:active {
+    background: rgba(255, 165, 2, 0.5);
+    transform: scale(0.95);
+}
+
+.control-drift {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    font-size: 1rem;
+    pointer-events: all;
+}
+
+/* Garage/Shop */
+.money-display {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #2ed573;
+}
+
+.vehicle-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.vehicle-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.vehicle-card:hover {
+    border-color: #ffa502;
+    transform: translateY(-5px);
+}
+
+.vehicle-card.selected {
+    border-color: #2ed573;
+    background: rgba(46, 213, 115, 0.1);
+}
+
+.vehicle-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.vehicle-card.locked:hover {
+    transform: none;
+}
+
+.vehicle-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffa502;
+}
+
+.vehicle-stats {
+    margin: 10px 0;
+    text-align: left;
+}
+
+.vehicle-stat {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.stat-bar {
+    width: 60%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffa502 0%, #ff6348 100%);
+    transition: width 0.3s ease;
+}
+
+.vehicle-price {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: #2ed573;
+}
+
+.vehicle-price.locked {
+    color: #ff4757;
+}
+
+/* Game Over Screen */
+.game-over-title {
+    color: #ff4757;
+    font-size: 3rem;
+    margin-bottom: 30px;
+    animation: fadeInDown 0.5s ease;
+}
+
+.game-over-stats {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.game-over-stats .stat-item {
+    margin: 15px 0;
+}
+
+.game-over-stats .stat-item.highlight {
+    background: rgba(46, 213, 115, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+/* Loading Screen */
+.loading-content {
+    text-align: center;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px auto;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4757 0%, #ffa502 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    h2 {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+    
+    .hud-top {
+        padding: 10px;
+    }
+    
+    .hud-value {
+        font-size: 1.2rem;
+    }
+    
+    .vehicle-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 165, 2, 0.5);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 165, 2, 0.8);
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0f14;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: #e8eef5;
+}
+
+#game-canvas {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  display: block;
+  background: #090c10;
+}
+
+#ui-root {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+
+.panel {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  background: rgba(10, 14, 20, 0.85);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 20px 24px;
+  min-width: 280px;
+  max-width: 90vw;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.panel.hidden { display: none; }
+.panel.visible { display: block; }
+
+h1, h2 { margin: 0 0 12px; }
+
+button {
+  appearance: none;
+  border: none;
+  background: #2a6cff;
+  color: white;
+  padding: 10px 14px;
+  margin: 6px 0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { background: #2f79ff; }
+button:active { background: #2460d1; }
+
+#hud {
+  position: absolute; left: 12px; top: 12px; transform: none;
+  background: rgba(0,0,0,0.35);
+  border-radius: 8px;
+}
+.hud-item { margin: 4px 8px; }
+
+#touch-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); }
+.touch { font-size: 20px; margin: 0 6px; opacity: 0.9; }
+
+#vehicle-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.vehicle-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px;
+}
+.vehicle-card .name { font-weight: 700; }
+.vehicle-card .stats { font-size: 12px; opacity: 0.8; }
+.vehicle-card button { width: 100%; margin-top: 8px; }
