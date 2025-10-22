@@ -1,0 +1,141 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { createRendererAndScene, createCamera } from './threeInit.js';
+
+export class Game {
+  constructor({ canvas, ui, assets, audio, persistence }) {
+    this.canvas = canvas;
+    this.ui = ui;
+    this.assets = assets;
+    this.audio = audio;
+    this.persistence = persistence;
+
+    this.renderer = null;
+    this.scene = null;
+    this.camera = null;
+
+    this.activeScene = null; // current scene controller
+    this.scenes = new Map();
+
+    this.clock = new THREE.Clock();
+    this._boundTick = this._tick.bind(this);
+
+    this.runStats = { distance: 0, runMoney: 0 };
+
+    this.selectedVehicleId = null;
+  }
+
+  async boot() {
+    const { renderer, scene } = createRendererAndScene(this.canvas);
+    this.renderer = renderer;
+    this.scene = scene;
+    this.camera = createCamera();
+
+    window.addEventListener('resize', () => this._onResize());
+    this._onResize();
+
+    await this.assets.loadPlaceholders();
+    await this.audio.init();
+
+    this.selectedVehicleId = this.persistence.getSelectedVehicleId() || 'starter';
+    this.ui.updateTotalMoney(this.persistence.getTotalMoney());
+
+    requestAnimationFrame(this._boundTick);
+  }
+
+  registerScene(name, sceneController) {
+    this.scenes.set(name, sceneController);
+  }
+
+  async switchTo(name) {
+    // Base UI state for scene switch
+    this.ui.hideMainMenu();
+    this.ui.hideGarage();
+    this.ui.hideGameOver();
+    if (name === 'run') this.ui.showHUD(); else this.ui.hideHUD();
+
+    if (this.activeScene && this.activeScene.onExit) {
+      await this.activeScene.onExit();
+    }
+
+    this.clearScene();
+
+    this.activeScene = this.scenes.get(name);
+    if (!this.activeScene) throw new Error(`Unknown scene: ${name}`);
+
+    if (this.activeScene.onEnter) {
+      await this.activeScene.onEnter();
+    }
+  }
+
+  showMainMenu() {
+    this.ui.showMainMenu();
+    this.ui.hideHUD();
+    this.ui.hideGarage();
+    this.ui.hideGameOver();
+  }
+
+  showGarage() {
+    this.ui.hideMainMenu();
+    this.ui.hideHUD();
+    this.ui.populateGarage(this.persistence);
+    this.ui.showGarage();
+  }
+
+  clearScene() {
+    // Remove all objects from scene
+    if (!this.scene) return;
+    const toRemove = [];
+    this.scene.traverse(obj => {
+      if (obj !== this.camera) toRemove.push(obj);
+    });
+    toRemove.forEach(obj => {
+      if (obj.parent) obj.parent.remove(obj);
+    });
+  }
+
+  endRun({ distance, collectedMoney, reason }) {
+    const totalBefore = this.persistence.getTotalMoney();
+    const earned = Math.floor(distance * 0.05) + collectedMoney; // simple formula
+    const newTotal = totalBefore + earned;
+    this.persistence.setTotalMoney(newTotal);
+
+    this.ui.updateGameOver({ distance, collected: collectedMoney, total: newTotal });
+    this.ui.showGameOver();
+    this.ui.hideHUD();
+    // Stop updating scene after game over
+    this.activeScene = null;
+  }
+
+  _onResize() {
+    if (!this.renderer || !this.camera) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    this.renderer.setPixelRatio(dpr);
+    this.renderer.setSize(w, h, false);
+    if (this.camera.isPerspectiveCamera) {
+      this.camera.aspect = w / h;
+      this.camera.updateProjectionMatrix();
+    } else if (this.camera.isOrthographicCamera) {
+      // no-op here
+    }
+  }
+
+  _tick() {
+    const dt = Math.min(this.clock.getDelta(), 0.05);
+    if (this.activeScene && this.activeScene.update) {
+      this.activeScene.update(dt);
+    }
+    this.renderer.render(this.scene, this.camera);
+    requestAnimationFrame(this._boundTick);
+  }
+
+  async returnToMenu() {
+    if (this.activeScene && this.activeScene.onExit) {
+      await this.activeScene.onExit();
+    }
+    this.clearScene();
+    this.activeScene = null;
+    this.showMainMenu();
+  }
+}
