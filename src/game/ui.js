@@ -22,22 +22,48 @@ export function setupUI() {
   const btnBackMenu = el('btn-back-menu');
   const btnStartFromGarage = el('btn-start-from-garage');
 
+  const touchControls = el('touch-controls');
   const touch = {
-    left: el('btn-left'), right: el('btn-right'), accel: el('btn-accel'), brake: el('btn-brake'),
-    root: el('touch-controls')
+    left: el('btn-left'), 
+    right: el('btn-right'), 
+    accel: el('btn-accel'), 
+    brake: el('btn-brake'),
+    root: touchControls
   };
 
   const api = {
-    showMainMenu() { mainMenu.classList.remove('hidden'); mainMenu.classList.add('visible'); },
-    hideMainMenu() { mainMenu.classList.add('hidden'); mainMenu.classList.remove('visible'); },
+    showMainMenu() { 
+      mainMenu.classList.remove('hidden'); 
+      mainMenu.classList.add('visible'); 
+      if (touchControls) touchControls.classList.add('hidden');
+    },
+    hideMainMenu() { 
+      mainMenu.classList.add('hidden'); 
+      mainMenu.classList.remove('visible'); 
+    },
 
-    showHUD() { hud.classList.remove('hidden'); },
-    hideHUD() { hud.classList.add('hidden'); },
+    showHUD() { 
+      hud.classList.remove('hidden'); 
+      // Show touch controls on mobile/touch devices
+      if (touchControls && ('ontouchstart' in window || window.innerWidth < 769)) {
+        touchControls.classList.remove('hidden');
+      }
+    },
+    hideHUD() { 
+      hud.classList.add('hidden'); 
+      if (touchControls) touchControls.classList.add('hidden');
+    },
 
-    showGameOver() { gameOver.classList.remove('hidden'); },
+    showGameOver() { 
+      gameOver.classList.remove('hidden'); 
+      if (touchControls) touchControls.classList.add('hidden');
+    },
     hideGameOver() { gameOver.classList.add('hidden'); },
 
-    showGarage() { garage.classList.remove('hidden'); },
+    showGarage() { 
+      garage.classList.remove('hidden'); 
+      if (touchControls) touchControls.classList.add('hidden');
+    },
     hideGarage() { garage.classList.add('hidden'); },
 
     updateHUD({ distance, runMoney, totalMoney }) {

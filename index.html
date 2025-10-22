@@ -4,11 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Escape Road</title>
+  <title>Escape Road - Web</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- UI Layers -->
   <div id="ui-root">
+    <!-- Resize Overlay -->
+    <div id="resize-overlay" class="resize-overlay hidden">
+      <div class="resize-message">
+        <div class="resize-icon">↔</div>
+        <p>Adjusting layout...</p>
+      </div>
+    </div>
+
     <div id="main-menu" class="panel visible">
       <h1>Escape Road</h1>
       <button id="btn-play">Start Run</button>
@@ -19,12 +28,13 @@
       <div class="hud-item">Distance: <span id="hud-distance">0</span> m</div>
       <div class="hud-item">Run $: <span id="hud-money">0</span></div>
       <div class="hud-item">Total $: <span id="hud-total-money">0</span></div>
-      <div id="touch-controls" class="hidden">
-        <button id="btn-left" class="touch">⟵</button>
-        <button id="btn-accel" class="touch">▲</button>
-        <button id="btn-right" class="touch">⟶</button>
-        <button id="btn-brake" class="touch">▼</button>
-      </div>
+    </div>
+
+    <div id="touch-controls" class="hidden">
+      <button id="btn-left" class="touch">⟵</button>
+      <button id="btn-accel" class="touch">▲</button>
+      <button id="btn-right" class="touch">⟶</button>
+      <button id="btn-brake" class="touch">▼</button>
     </div>
 
     <div id="game-over" class="panel hidden">
